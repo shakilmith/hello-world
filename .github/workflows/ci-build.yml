@@ -1,0 +1,29 @@
+name: Spring Boot Native Build
+on:
+  push:
+    branches: ["main"]
+jobs:
+  build-native:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image: true
+
+      - name: Build Native Image
+        run: mvn -Pnative native:compile
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-app
+          path: target/*
+  
